@@ -1,7 +1,7 @@
-<picture aling="center">
+<div aling="center">
   <source media="(prefers-color-scheme: dark)" srcset="https://cdn.discordapp.com/attachments/585069498986397707/1112788994175012936/image-removebg-preview.png">
   <img src="https://cdn.discordapp.com/attachments/585069498986397707/1112788501642104832/OIG.png">
-</picture>
+</div>
 
 <h1 align="center">talk_with_bot</h1>
 <p align="center">Talk with AI GPT</p>
