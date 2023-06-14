@@ -1,9 +1,29 @@
+import threading
 import flet as ft
 import datetime
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
+
+api = os.environ.get("API_URL")
 
 
 def create_state(name, value=None):
     globals()[name] = value
+
+
+def send_api(text="hello"):
+    response = requests.post(api + "generate", json={"text": text})
+
+
+def get_api():
+    return requests.get(api + "generate-text").json()["data"]
+
+
+def get_api_date():
+    return requests.get(api + "generate-text").json()["date"]
 
 
 class InputField(ft.UserControl):
@@ -52,8 +72,10 @@ class InputField(ft.UserControl):
 class MainPage(ft.UserControl):
     def __init__(self):
         super().__init__()
-        self.list_view = ft.ListView(height=500)
+        self.list_view = ft.ListView(height=500, padding=20)
         self.text_show_from_input = "สวัสดีจ้า"
+        self.text_bot = ""
+        self.date_text = ""
 
     def build(self):
         data_example = [
@@ -195,7 +217,7 @@ class MainPage(ft.UserControl):
                         ft.Row(
                             [
                                 ft.Text(
-                                    f"{datetime.datetime.now().strftime('%d/%m/%Y')},{datetime.datetime.now().strftime('%H:%M:%S')}",
+                                    self.date_text,
                                     size=10,
                                 ),
                             ]
@@ -204,7 +226,7 @@ class MainPage(ft.UserControl):
                             content=ft.Container(
                                 content=ft.Column(
                                     [
-                                        ft.Text(self.text_show_from_input),
+                                        self.text_bot,
                                     ]
                                 ),
                                 width=300,
@@ -270,13 +292,31 @@ class AppTalkBot(ft.UserControl):
 
     @update
     def after_click(self, e):
-        if self.text_field.value != "":
+        def widget_static():
+            self.main_page.update()
             self.main_page.text_show_from_input = self.text_field.value
             self.main_page.controls.pop()
             self.main_page.controls.append(self.main_page.chat_page())
             self.main_page.update()
-        else:
-            pass
+
+        def task():
+            while True:
+                if get_api():
+                    self.main_page.text_bot = ft.Text(get_api())
+                    self.main_page.date_text = get_api_date()
+                    widget_static()
+                    break
+
+        if self.text_field.value != "":
+            threading.Thread(target=send_api, args=(self.text_field.value,)).start()
+            threading.Thread(target=task).start()
+            self.main_page.text_bot = ft.Row(
+                [
+                    ft.ProgressRing(width=16, height=16, stroke_width=2),
+                    ft.Text("กำลังประมวลข้อความอยู่รอสักครู่..."),
+                ]
+            )
+            widget_static()
 
     def build(self):
         return ft.Container(
