@@ -64,6 +64,11 @@ Instructions on how to use the project, including any usage examples and screens
 
 <!--- End Tree --->
 
+## ChangeLog
+
+- version 0.1: Initial version
+  - Design and coding
+
 ## Contributing
 
 If you would like to contribute to the project, include a section on how to do so, including any guidelines and best practices.
