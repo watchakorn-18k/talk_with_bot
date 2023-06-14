@@ -160,7 +160,13 @@ class MainPage(ft.UserControl):
 
         controls = ft.Column(
             [
-                ft.Text("พูดคุยกับ AI", size=30, color=ft.colors.PRIMARY),
+                ft.Row(
+                    [
+                        ft.Text("พูดคุยกับ AI", size=30, color=ft.colors.PRIMARY),
+                        ft.Text("วัชกร บุตร์ดีวงษ์"),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
                 ft.Container(padding=5),
                 ft.Row(
                     [
