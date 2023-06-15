@@ -72,6 +72,7 @@ Instructions on how to use the project, including any usage examples and screens
 - version 0.1: Initial version
   - Design and coding
   - Connect API
+  - Append chat list view
 
 ## Contributing
 

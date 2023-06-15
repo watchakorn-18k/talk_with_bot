@@ -10,10 +10,6 @@ import os
 api = os.environ.get("API_URL")
 
 
-def create_state(name, value=None):
-    globals()[name] = value
-
-
 def send_api(text="hello"):
     response = requests.post(api + "generate", json={"text": text})
 
@@ -29,9 +25,9 @@ def get_api_date():
 class InputField(ft.UserControl):
     def __init__(self, page):
         super().__init__()
-        self.text_field = ft.TextField(
+        self.text_field_main = ft.TextField(
             height=50,
-            width=300,
+            width=230,
             border_color=ft.colors.PRIMARY,
             on_change=self.on_change_text,
         )
@@ -39,6 +35,9 @@ class InputField(ft.UserControl):
         self.button_send = ft.IconButton(
             icon=ft.icons.SEND,
             disabled=True,
+        )
+        self.button_reset = ft.IconButton(
+            icon=ft.icons.CLEANING_SERVICES,
         )
 
     def update(func):
@@ -56,7 +55,11 @@ class InputField(ft.UserControl):
         return ft.Container(
             content=ft.Row(
                 [
-                    self.text_field,
+                    ft.Container(
+                        self.button_reset,
+                        height=50,
+                    ),
+                    self.text_field_main,
                     ft.Container(
                         self.button_send,
                         bgcolor=ft.colors.PRIMARY_CONTAINER,
@@ -72,10 +75,11 @@ class InputField(ft.UserControl):
 class MainPage(ft.UserControl):
     def __init__(self):
         super().__init__()
-        self.list_view = ft.ListView(height=500, padding=20)
+        self.list_view = ft.ListView(height=500, padding=20, auto_scroll=True)
         self.text_show_from_input = "สวัสดีจ้า"
         self.text_bot = ""
         self.date_text = ""
+        self.column_list = []
 
     def build(self):
         data_example = [
@@ -243,14 +247,14 @@ class MainPage(ft.UserControl):
                 ),
             ]
         )
-
-        self.list_view.controls = [self.client_card, self.bot_card]
+        self.column_list = [self.client_card, self.bot_card]
+        self.list_view.controls.append(ft.Column(self.column_list))
 
         return ft.Column(
             [
                 self.list_view,
                 ft.Container(height=30),
-            ]
+            ],
         )
 
 
@@ -261,9 +265,11 @@ class AppTalkBot(ft.UserControl):
         self.app_bar()
         self.input_text = InputField(self.page)
         self.main_page = MainPage()
-        self.text_field = self.input_text.text_field
+        self.text_field = self.input_text.text_field_main
         self.btn_send = self.input_text.button_send
         self.btn_send.on_click = self.after_click
+        self.btn_reset = self.input_text.button_reset
+        self.btn_reset.on_click = self.click_reset
 
     # create decoration
     def update(func):
@@ -290,13 +296,12 @@ class AppTalkBot(ft.UserControl):
         )
         self.page.appbar = ft.AppBar(
             leading_width=40,
-            title=ft.Text("คุยกับ AI"),
+            title=ft.TextButton("คุยกับ AI", on_click=self.click_home),
             center_title=False,
             bgcolor=ft.colors.PRIMARY_CONTAINER,
             actions=[button_switch],
         )
 
-    @update
     def after_click(self, e):
         def widget_static():
             self.main_page.update()
@@ -310,12 +315,14 @@ class AppTalkBot(ft.UserControl):
                 if get_api():
                     self.main_page.text_bot = ft.Text(get_api())
                     self.main_page.date_text = get_api_date()
+                    self.main_page.list_view.controls.pop()
                     widget_static()
                     break
 
         if self.text_field.value != "":
             threading.Thread(target=send_api, args=(self.text_field.value,)).start()
             threading.Thread(target=task).start()
+
             self.main_page.text_bot = ft.Row(
                 [
                     ft.ProgressRing(width=16, height=16, stroke_width=2),
@@ -323,6 +330,20 @@ class AppTalkBot(ft.UserControl):
                 ]
             )
             widget_static()
+
+    @update
+    def click_reset(self, e):
+        self.main_page.list_view.controls.clear()
+        self.main_page.update()
+        self.main_page.controls.pop()
+        self.main_page.controls.append(self.main_page.build())
+        self.main_page.update()
+
+    @update
+    def click_home(self, e):
+        self.main_page.controls.pop()
+        self.main_page.controls.append(self.main_page.build())
+        self.main_page.update()
 
     def build(self):
         return ft.Container(
@@ -341,7 +362,7 @@ def main(page: ft.Page):
     page.title = "คุยกับ AI"
     page.theme = ft.Theme(color_scheme_seed=ft.colors.INDIGO)
     app = AppTalkBot(page)
-    page.window_height = 1039
+    page.window_height = 939
     page.window_width = 575
     page.add(app)
 
