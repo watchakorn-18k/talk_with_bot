@@ -30,6 +30,15 @@ cd talk_with_bot
 
 ```
 
+- Fork api from [https://replit.com/@Porton0071/GPT](https://replit.com/@Porton0071/GPT)
+
+- create file `.env` and replace
+
+```
+VERSION = 0.1.0
+API_URL = https://######.repl.co/
+```
+
 ## Installation
 
 ```
