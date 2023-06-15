@@ -1,3 +1,4 @@
+altgraph==0.17.3
 anyio==3.7.0
 black==23.3.0
 certifi==2023.5.7
@@ -18,8 +19,12 @@ mypy-extensions==1.0.0
 oauthlib==3.2.2
 packaging==23.1
 pathspec==0.11.1
+pefile==2023.2.7
 platformdirs==3.5.3
+pyinstaller==5.12.0
+pyinstaller-hooks-contrib==2023.3
 python-dotenv==1.0.0
+pywin32-ctypes==0.2.0
 repath==0.9.0
 requests==2.31.0
 rfc3986==1.5.0

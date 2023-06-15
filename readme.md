@@ -8,6 +8,7 @@
 
 <h1 align="center">talk_with_bot</h1>
 <p align="center">Talk with AI GPT</p>
+<p align="center"><a href="https://github.com/watchakorn-18k/talk_with_bot/releases/download/v0.1/Talk_With_AI_v0.1.exe">Download Now</d></p>
 
 <p align="center">
   <a href="LICENSE" target="_blank">
